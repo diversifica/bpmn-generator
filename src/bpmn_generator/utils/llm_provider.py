@@ -41,7 +41,7 @@ class LLMProvider:
         Examples:
             >>> # OpenAI (cloud)
             >>> llm = LLMProvider.get_llm(provider="openai")
-            
+
             >>> # Ollama (local)
             >>> llm = LLMProvider.get_llm(provider="ollama", model="qwen2.5:32b")
         """
@@ -56,14 +56,11 @@ class LLMProvider:
             return LLMProvider._get_lmstudio_llm(model, temperature, **kwargs)
         else:
             raise ValueError(
-                f"Unsupported LLM provider: {provider}. "
-                f"Supported: openai, ollama, lmstudio"
+                f"Unsupported LLM provider: {provider}. Supported: openai, ollama, lmstudio"
             )
 
     @staticmethod
-    def _get_openai_llm(
-        model: str | None, temperature: float, **kwargs: Any
-    ) -> BaseChatModel:
+    def _get_openai_llm(model: str | None, temperature: float, **kwargs: Any) -> BaseChatModel:
         """Get OpenAI LLM instance."""
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -81,17 +78,14 @@ class LLMProvider:
         )
 
     @staticmethod
-    def _get_ollama_llm(
-        model: str | None, temperature: float, **kwargs: Any
-    ) -> BaseChatModel:
+    def _get_ollama_llm(model: str | None, temperature: float, **kwargs: Any) -> BaseChatModel:
         """Get Ollama LLM instance (local/private)."""
         try:
             from langchain_ollama import ChatOllama
-        except ImportError:
+        except ImportError as e:
             raise ImportError(
-                "langchain-ollama not installed. "
-                "Install with: pip install langchain-ollama"
-            )
+                "langchain-ollama not installed. Install with: pip install langchain-ollama"
+            ) from e
 
         base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         model = model or os.getenv("OLLAMA_MODEL", "qwen2.5:32b")
@@ -104,9 +98,7 @@ class LLMProvider:
         )
 
     @staticmethod
-    def _get_lmstudio_llm(
-        model: str | None, temperature: float, **kwargs: Any
-    ) -> BaseChatModel:
+    def _get_lmstudio_llm(model: str | None, temperature: float, **kwargs: Any) -> BaseChatModel:
         """Get LMStudio LLM instance (local/private).
 
         LMStudio exposes an OpenAI-compatible API, so we use ChatOpenAI

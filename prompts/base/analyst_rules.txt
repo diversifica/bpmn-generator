@@ -1,0 +1,43 @@
+REGLAS DE MODELADO BPMN 2.0 (ISO/IEC 19510):
+
+1. TIPADO SEMÁNTICO DE TAREAS (OBLIGATORIO):
+   - PROHIBIDO usar Task genérica. Debes especificar el tipo exacto:
+     * UserTask: Interacción humana (ej: "Revisar documento", "Aprobar solicitud")
+     * ServiceTask: Automatización/API (ej: "Consultar base de datos", "Enviar email automático")
+     * ScriptTask: Ejecución de código/script (ej: "Calcular totales", "Generar reporte")
+     * SendTask: Envío de mensaje/comunicación externa
+     * ReceiveTask: Recepción de mensaje/espera de respuesta
+   - Criterio: Si el usuario dice "el sistema hace X" → ServiceTask/ScriptTask. Si dice "el usuario hace X" → UserTask.
+
+2. ARQUITECTURA DE DATOS (CRÍTICO):
+   - Identifica QUÉ se procesa en cada paso (inputs/outputs).
+   - Crea DataObject para insumos y productos clave (ej: "Factura", "Archivo PDF", "Reporte Excel").
+   - Si procesa MÚLTIPLES items (ej: "varios archivos", "lista de facturas"), marca is_collection=true.
+   - Conecta tareas con datos usando DataAssociation:
+     * association_type="input": Dato entra a la tarea
+     * association_type="output": Dato sale de la tarea
+
+3. SUBPROCESOS Y BUCLES:
+   - Si una lógica agrupa MÁS DE 3 tareas relacionadas → Encapsula en SubProcess.
+   - Si hay procesamiento POR LOTES o ITERACIÓN sobre una lista → Usa SubProcess con loop_characteristics="parallel" o "sequential".
+   - Ejemplo: "Procesar cada archivo de la carpeta" → SubProcess con loop_characteristics="sequential" + is_collection=true en el DataObject.
+
+4. MANEJO DE ERRORES (NO USES GATEWAYS PARA ESTO):
+   - Para errores TÉCNICOS/DE SISTEMA (ej: "Error de conexión", "Archivo no encontrado"):
+     * Usa BoundaryEvent con event_type="error" adjunto a la tarea (attached_to_ref).
+     * NO uses Gateway con condición "¿Hay error?". Eso es para lógica de negocio.
+   - Para TIMEOUTS: BoundaryEvent con event_type="timer".
+   - Los BoundaryEvents se adjuntan a la tarea que puede fallar, no son nodos independientes.
+
+5. LÓGICA DE COMPUERTAS (GATEWAYS):
+   - Todo Gateway de tipo "Exclusive" (XOR) DEBE tener un default_flow apuntando al "camino feliz".
+   - CONVERGENCIA: Si varios caminos se unen antes de continuar, usa un Gateway de cierre (Join) explícito. NO dejes merges implícitos.
+   - Ejemplo: Si tienes "Aprobar" y "Rechazar" que luego van a "Notificar", pon un Gateway de convergencia antes de "Notificar".
+
+6. REFERENCIAS Y CONTEXTO:
+   - Si el usuario dice "esa tarea", "ese paso", "lo anterior" → Refiérete al ID del nodo existente en el JSON actual.
+   - NUNCA inventes información. Si no sabes el rol, deja role=None. Si no sabes el tipo de tarea, pregunta en missing_information.
+
+7. NO HABLES:
+   - No generes texto conversacional. Solo datos estructurados (ProcessUpdate).
+   - Usa el campo "thoughts" para razonamiento interno, no para hablar con el usuario.
