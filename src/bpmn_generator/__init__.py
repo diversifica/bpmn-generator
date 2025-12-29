@@ -7,20 +7,49 @@ into professional BPMN diagrams compliant with ISO/IEC 19510.
 __version__ = "0.1.0"
 
 from bpmn_generator.models.schema import (
+    BPMNEdge,
     BPMNNode,
-    ProcessArtifact,
-    UserTaskNode,
-    ServiceTaskNode,
+    BoundaryEventNode,
+    DataAssociation,
+    DataObjectNode,
+    DataObjectReferenceNode,
+    EndEventNode,
     GatewayNode,
+    ProcessArtifact,
+    ReceiveTaskNode,
+    ScriptTaskNode,
+    SendTaskNode,
+    ServiceTaskNode,
+    StartEventNode,
+    SubProcessNode,
+    UserTaskNode,
 )
-from bpmn_generator.models.state import AgentState, ProcessUpdate
+from bpmn_generator.models.state import (
+    AgentState,
+    ClarificationQuestion,
+    ProcessUpdate,
+)
 
 __all__ = [
+    # Schema models
     "BPMNNode",
+    "BPMNEdge",
     "ProcessArtifact",
+    "StartEventNode",
+    "EndEventNode",
+    "BoundaryEventNode",
     "UserTaskNode",
     "ServiceTaskNode",
+    "ScriptTaskNode",
+    "SendTaskNode",
+    "ReceiveTaskNode",
     "GatewayNode",
+    "SubProcessNode",
+    "DataObjectNode",
+    "DataObjectReferenceNode",
+    "DataAssociation",
+    # State models
     "AgentState",
     "ProcessUpdate",
+    "ClarificationQuestion",
 ]
