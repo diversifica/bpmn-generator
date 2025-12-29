@@ -68,5 +68,6 @@ output/
 Thumbs.db
 
 # Project specific
-docs/plans/*.md
+docs/plans/draft_*.md
+!docs/plans/[0-9]*.md
 !docs/plans/README.md
