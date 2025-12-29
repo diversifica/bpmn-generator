@@ -13,6 +13,17 @@ Este proyecto está diseñado para ser **desarrollado y mantenido por agentes de
 
 ## 📋 Workflow Obligatorio
 
+### Git Flow Strategy
+
+Este proyecto usa **Git Flow** con dos ramas principales:
+
+- **`main`**: Código en producción (solo releases)
+- **`develop`**: Rama de desarrollo activa (base para features)
+
+**Regla de oro**: NUNCA commitear directamente en `main` ni `develop`.
+
+---
+
 ### 1. Planificación (PLANNING Mode)
 
 **NUNCA** empieces a codificar sin un plan aprobado.
@@ -73,8 +84,13 @@ Antes de tocar código, crea `docs/plans/ISSUE_NUMBER_description.md`:
 
 ### 2. Implementación (EXECUTION Mode)
 
-#### 2.1 Crear Rama
+#### 2.1 Crear Rama desde `develop`
 ```bash
+# 1. Asegurarse de estar en develop actualizado
+git checkout develop
+git pull origin develop
+
+# 2. Crear rama de feature/bug/chore
 git checkout -b tipo/numero-descripcion-corta
 
 # Ejemplos:
@@ -82,6 +98,12 @@ git checkout -b feature/23-add-subprocess-support
 git checkout -b bug/45-fix-gateway-validation
 git checkout -b chore/12-refactor-prompt-loading
 ```
+
+**Nomenclatura de ramas**:
+- `feature/ISSUE-descripcion` - Nueva funcionalidad
+- `bug/ISSUE-descripcion` - Corrección de error
+- `chore/ISSUE-descripcion` - Mantenimiento, refactor
+- `docs/ISSUE-descripcion` - Solo documentación
 
 #### 2.2 Commits Atómicos
 **Formato obligatorio**:
@@ -224,7 +246,24 @@ with open("output_test.bpmn", "w") as f:
 
 ### 4. Pull Request
 
-#### 4.1 Checklist Obligatorio
+#### 4.1 Preparar PR
+```bash
+# Asegurarse de que develop está actualizado
+git checkout develop
+git pull origin develop
+
+# Rebase tu rama sobre develop
+git checkout feature/23-add-subprocess-support
+git rebase develop
+
+# Push de tu rama
+git push origin feature/23-add-subprocess-support
+```
+
+#### 4.2 Abrir PR hacia `develop`
+**Base branch**: `develop` (NO `main`)
+
+#### 4.3 Checklist Obligatorio
 ```markdown
 ## Descripción
 Breve resumen del cambio (1-2 líneas).
@@ -266,15 +305,17 @@ Closes #NUMERO
 - [ ] CHANGELOG.md actualizado
 - [ ] No hay `print()` en código final
 - [ ] No hay TODOs sin issue asociado
+- [ ] Rama actualizada con `develop` (rebase)
 ```
 
-#### 4.2 Revisión de Código
+#### 4.4 Revisión de Código
 
 **Criterios de aprobación**:
 - ✅ CI en verde (todos los checks pasan)
 - ✅ Cobertura de tests >= 80%
 - ✅ Al menos 1 aprobación humana
-- ✅ No conflictos con `main`
+- ✅ No conflictos con `develop`
+- ✅ Rebase sobre `develop` actualizado
 
 **Criterios de rechazo automático**:
 - ❌ Tests fallan
@@ -282,6 +323,17 @@ Closes #NUMERO
 - ❌ Ruff/mypy con errores
 - ❌ Commits sin formato correcto
 - ❌ Sin tests para nuevo código
+- ❌ PR hacia `main` (debe ser hacia `develop`)
+
+#### 4.5 Merge
+Una vez aprobado:
+```bash
+# Squash merge hacia develop
+git checkout develop
+git merge --squash feature/23-add-subprocess-support
+git commit -m "feature(#23): add subprocess support with loop characteristics"
+git push origin develop
+```
 
 ---
 
