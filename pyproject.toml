@@ -41,9 +41,19 @@ dev = [
     "pre-commit>=3.8.0",
 ]
 
+# Local LLM support (privacy-focused)
+local = [
+    "langchain-ollama>=0.1.0",
+]
+
 rag = [
     "chromadb>=0.5.0",
     "langchain-community>=0.3.0",
+]
+
+# All optional dependencies
+all = [
+    "bpmn-generator[dev,local,rag]",
 ]
 
 [project.urls]

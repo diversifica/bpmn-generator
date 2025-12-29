@@ -16,6 +16,10 @@ Sistema automatizado basado en agentes LLM que convierte descripciones de proces
 - **Trazabilidad Completa**: Cada elemento BPMN rastreable hasta la conversación original
 - **Human-in-the-Loop**: Aprobación explícita antes de generar
 - **Persistencia**: Pausar y retomar sesiones días después
+- **🔒 Privacy-First**: Soporte para LLMs locales (Ollama, LMStudio) y cloud (OpenAI)
+  - **Ollama**: 100% local, sin envío de datos a internet
+  - **OpenAI**: Máxima calidad, requiere API key
+  - **Switch flexible**: Cambiar entre proveedores según necesidad
 
 ## 🏗️ Arquitectura
 
@@ -46,7 +50,7 @@ prompts/
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/YOUR_USERNAME/bpmn-generator.git
+git clone https://github.com/diversifica/bpmn-generator.git
 cd bpmn-generator
 
 # Crear entorno virtual
@@ -57,10 +61,35 @@ python -m venv .venv
 # Instalar dependencias
 pip install -e ".[dev]"
 
+# Para soporte local (Ollama)
+pip install -e ".[local]"
+
 # Configurar variables de entorno
 copy .env.example .env
-# Editar .env con tu OPENAI_API_KEY
+# Editar .env con configuración de LLM
 ```
+
+### Configuración de LLM
+
+**Opción 1: OpenAI (Cloud)**
+```env
+LLM_PROVIDER=openai
+OPENAI_API_KEY=sk-your-key-here
+OPENAI_MODEL=gpt-4o
+```
+
+**Opción 2: Ollama (Local/Privacy) ✅ Recomendado para datos sensibles**
+```bash
+# 1. Instalar Ollama: https://ollama.ai/download
+# 2. Descargar modelo
+ollama pull qwen2.5:32b
+
+# 3. Configurar .env
+LLM_PROVIDER=ollama
+OLLAMA_MODEL=qwen2.5:32b
+```
+
+Ver [docs/LLM_PROVIDERS.md](docs/LLM_PROVIDERS.md) para más detalles.
 
 ### Uso Básico
 
